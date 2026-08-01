@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management Dashboard</title>
+    <style>
+        /* --- CSS DESIGN --- */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6)), 
+                              url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; 
+
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite; 
+        }
+
+        h1 {
+            color: #ffffff;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 32px;
+        }
+        
+        header p {
+            color: #e0e0e0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 18px;
+        }
+
+        .dashboard {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .form-card, .table-card {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.8s ease-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-card { flex: 1; min-width: 320px; }
+        .table-card { flex: 2; min-width: 500px; }
+
+        .form-card:hover, .table-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background-color: white;
+            font-size: 15px;
+        }
+
+        input:focus, select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+            outline: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            background-color: #ff7675;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .delete-btn:hover {
+            background-color: #d63031;
+            transform: scale(1.05);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRow {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .new-row {
+            animation: slideInRow 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- --- HTML STRUCTURE --- -->
+    <div class="container">
+        <header>
+            <img src="logo.jpg" alt="Education Logo" class="header-logo">
+            
+            <h1>Student Management System</h1>
+            <p>Track attendance and grades dynamically</p>
+        </header>
+
+        <section class="dashboard">
+            <div class="form-card">
+                <h2>Add New Record</h2>
+                <form id="studentForm">
+                    <div class="input-group">
+                        <label for="name">Student Name:</label>
+                        <input type="text" id="name" required placeholder="e.g. Arun Kumar">
+                    </div>
+                    <div class="input-group">
+                        <label for="roll">Roll Number:</label>
+                        <input type="text" id="roll" required placeholder="e.g. CS101">
+                    </div>
+                    <div class="input-group">
+                        <label for="attendance">Attendance (%):</label>
+                        <input type="number" id="attendance" required min="0" max="100" placeholder="0-100">
+                    </div>
+                    <!-- The grade input has been completely removed to automate it in JavaScript -->
+                    <button type="submit" class="btn-submit">Add Student</button>
+                </form>
+            </div>
+
+            <div class="table-card">
+                <h2>Current Records</h2>
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Roll Number</th>
+                            <th>Attendance</th>
+                            <th>Grade</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- --- JAVASCRIPT LOGIC --- -->
+    <script>
+    // 1. Fetch data from the database when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/api/students')
+            .then(res => res.json())
+            .then(data => {
+                const tableBody = document.querySelector('#studentTable tbody');
+                tableBody.innerHTML = ''; 
+                data.forEach(student => addRowToTable(student));
+            })
+            .catch(err => console.error('Error loading data:', err));
+    });
+
+    // 2. Handle form submission
+    document.getElementById('studentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const roll = document.getElementById('roll').value;
+        const attendance = parseFloat(document.getElementById('attendance').value);
+        
+        // Send data to the backend API
+        fetch('/api/students', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, roll, attendance })
+        })
+        .then(res => res.json())
+        .then(newStudent => {
+            if (newStudent.error) {
+                alert('Error: ' + newStudent.error); 
+            } else {
+                addRowToTable(newStudent); 
+                document.getElementById('studentForm').reset(); 
+            }
+        });
+    });
+
+    // 3. Helper function to create a table row
+    function addRowToTable(student) {
+        const tableBody = document.querySelector('#studentTable tbody');
+        const newRow = document.createElement('tr');
+        newRow.id = `student-${student.id}`; 
+        newRow.innerHTML = `
+            <td>${student.name}</td>
+            <td>${student.roll}</td>
+            <td>${student.attendance}%</td>
+            <td><strong>${student.grade}</strong></td>
+            <td><button class="delete-btn" onclick="deleteStudent(${student.id})">Delete</button></td>
+        `;
+        tableBody.appendChild(newRow);
+    }
+
+    // 4. Handle deleting a student
+    function deleteStudent(id) {
+        if (confirm("Delete this record?")) {
+            fetch(`/api/students/${id}`, { method: 'DELETE' })
+                .then(() => {
+                    document.getElementById(`student-${id}`).remove();
+                });
+        }
+    }
+</script>
+</body>
+</html>
